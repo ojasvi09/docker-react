@@ -57,3 +57,4 @@ jobs:
           deployment_package: deploy.zip
           bucket_name: elasticbeanstalk-ap-southeast-2-167730044117
           bucket_path: docker
+          version_label: ${{ github.sha }}
