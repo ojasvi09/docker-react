@@ -28,7 +28,6 @@ jobs:
   deploy:
     name: Deploy to Elastic Beanstalk
     runs-on: ubuntu-latest
-
     needs: test
 
     environment: dev
@@ -41,10 +40,23 @@ jobs:
 
       - name: Create deployment package
         run: |
-          zip -r deploy.zip . \
-            -x ".git/*" \
-            -x "node_modules/*" \
-            -x "deploy.zip"
+          mkdir bundle
+
+          cp -r src public package.json package-lock.json bundle/
+
+          # Package Dockerfile.dev as the root Dockerfile for Beanstalk
+          cp Dockerfile.dev bundle/Dockerfile
+
+          cd bundle
+          zip -r ../deploy.zip .
+
+      - name: Inspect deployment package
+        run: |
+          echo "===== Deployment package contents ====="
+          unzip -l deploy.zip
+
+          echo "===== Dockerfile used by Beanstalk ====="
+          unzip -p deploy.zip Dockerfile
 
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v22
@@ -55,6 +67,4 @@ jobs:
           environment_name: Docker-env
           region: ap-southeast-2
           deployment_package: deploy.zip
-          bucket_name: elasticbeanstalk-ap-southeast-2-167730044117
-          bucket_path: docker
           version_label: ${{ github.sha }}
