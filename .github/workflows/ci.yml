@@ -42,7 +42,7 @@ jobs:
         run: |
           mkdir bundle
           cp -r src public package.json package-lock.json bundle/
-          cp Dockerfile.dev bundle/Dockerfile
+          cp Dockerfile bundle/Dockerfile
           cd bundle
           zip -r ../deploy.zip .
 
